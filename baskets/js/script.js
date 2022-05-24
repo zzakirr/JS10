@@ -14,25 +14,46 @@ $(document).ready(function () {
 
 })
 let btns = document.querySelectorAll('.card .btn');
-let countItems = document.querySelector('.countItems');
-let count = localStorage.getItem('count');
-function basketItem(id,count){
+function BasketItem(id,count){
     this.Id = id;
     this.Count = count;
 }
 btns.forEach(el => {
     el.addEventListener('click', function () {
-        let basket = new basketItem;
-        basket.Id = el.id;
-        let specItemCount = 0;
-        specItemCount++;
-        basket.Count = specItemCount;
-        
-        if (!count) {
-            count = 0;
+        let dataId = el.getAttribute('id');
+        let basketStr = localStorage.getItem('basket');
+
+        let basketItems;
+        if(!basketStr){
+            basketItems = [];
         }
-        count++;
-        countItems.innerText = count;
+        else{
+            basketItems = JSON.parse(basketStr);
+        }
+        let item = basketItems.find(x=>x.Id == dataId);
+
+        if(item){
+            item.Count++;
+        }
+        else{
+            item = new BasketItem(dataId,1);
+            basketItems.push(item);
+        }
+
+        document.querySelector('.navbar .countItems').innerText = basketItems.length;
+
+        let li = document.createElement('li');
+        let fullLi = document.querySelector(".sidebar .list-group").appendChild(li);
+        fullLi.innerText = basketItems;
+        fullLi.classList.add('list-group-item' ,'d-flex' ,'justify-content-between', 'align-items-center');
+        let i = document.createElement('i');
+        let appRemuveBtn = document.querySelector(".sidebar .list-group li").appendChild(i);
+        appRemuveBtn.classList.add("fa-solid fa-trash-can");
+        localStorage.setItem('basket',JSON.stringify(basketItems));
+
+        
+       
     })
 })
-localStorage.setItem('count',count);
+
+// list-group-item d-flex justify-content-between align-items-center
